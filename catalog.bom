@@ -1,0 +1,146 @@
+brooklyn.catalog:
+  version: 0.9-SNAPSHOT
+
+  publish:
+    description: |
+      Entities for running the Hyperledger Fabric project in Apache Brooklyn.
+    license_code: Apache-2.0
+    icon_url: https://raw.githubusercontent.com/cloudsoft/brooklyn-hyperledger/master/hyperledger-fabric-icon.png
+
+  items:
+  - id: hyperledger-fabric-single-cluster
+    item:
+      name: "Hyperledger Fabric Single-cluster"
+      type: org.apache.brooklyn.entity.stock.BasicApplication
+
+      brooklyn.children:
+      - type: hyperledger-vp-cluster
+        name: "Hyperledger Validating Peer Cluster"
+        id: my-hyperledger-fabric-cluster
+
+      - type: hyperledger-services-host
+        name: "Membership Services and CLI Host"
+
+  - id: hyperledger-services-host
+    description: |
+      A Docker host running a Hyperledger Fabric Membership Services node, a CLI node, a
+      sequence node, and the root validating peer node in separate containers.
+    itemType: entity
+    item:
+
+      name: "Membership Services and CLI Docker Host"
+      type: hyperledger-docker-engine
+
+      brooklyn.children:
+      - type: hyperledger-membersrvc-node
+        id: my-hyperledger-membersrvc-node
+
+      - type: hyperledger-cli-node
+        id: my-hyperledger-cli-node
+
+      - type: hyperledger-sequence-node
+        id: my-hyperledger-sequence-node
+
+  - id: hyperledger-membersrvc-node
+    description: "A Hyperledger Fabric membership services node"
+    itemType: entity
+    item:
+
+      type: kubernetes-resource
+      name: "Membership Services Node"
+
+      brooklyn.config:
+        kubernetes.resource.file: "classpath://hyperledger-membersrvc.yaml"
+
+        provisioning.properties:
+          deployment: "membersrvc"
+
+      brooklyn.initializers:
+      - type: org.apache.brooklyn.core.sensor.StaticSensor
+        brooklyn.config:
+          name: secret.keys
+          targetType: java.util.List
+          static.value:
+            - "MwYpmSRjupbT"
+            - "5wgHK9qqYaPy"
+            - "vQelbRvja7cJ"
+            - "9LKqKH5peurL"
+            - "Pqh90CEW5juZ"
+            - "FfdvDkAdY81P"
+            - "QiXJgHyV4t7A"
+            - "twoKZouEyLyB"
+            - "BxP7QNh778gI"
+            - "wu3F1EwJWHvQ"
+
+  - id: hyperledger-cli-node
+    description: "A Hyperledger Fabric CLI node"
+    itemType: entity
+    item:
+
+      type: kubernetes-resource
+      name: "CLI Node"
+
+      brooklyn.config:
+        kubernetes.resource.file: "classpath://hyperledger-cli.yaml"
+
+        provisioning.properties:
+          deployment: $brooklyn:config("hyperledger.clinode")
+
+        hyperledger.clinode: cli
+        hyperledger.rootnode: vp0
+        hyperledger.membersrvc: membersvc
+
+        # NOTE how does hyperledger/fabric-peer:latest get tagged as hyperledger/fabric-baseimage:latest now?
+
+  - id: hyperledger-vp-cluster
+    description: "A cluster of Hyperledger Fabric validating peer nodes"
+    name: "Hyperledger Fabric Cluster"
+    iconUrl: https://raw.githubusercontent.com/cloudsoft/brooklyn-hyperledger/master/hyperledger-fabric-icon.png
+    item:
+      type: org.apache.brooklyn.entity.group.DynamicCluster
+
+      brooklyn.config:
+        initialSize: $brooklyn:config("hyperledger.peers.per.location")
+
+        firstMemberSpec:
+          $brooklyn:entitySpec:
+            type: hyperledger-validating-peer-node
+            id: my-hyperledger-root-node
+            name: "Root Validating Peer Node"
+
+            brooklyn.config:
+              hyperledger.isroot: true
+              launch.latch: $brooklyn:component("my-hyperledger-membersrvc-node").attributeWhenReady("service.isUp")
+
+        memberSpec:
+          $brooklyn:entitySpec:
+            type: hyperledger-validating-peer-node
+            name: "Validating Peer Docker Node"
+
+            brooklyn.config:
+              hyperledger.isroot: false
+              launch.latch: $brooklyn:component("my-hyperledger-root-node").attributeWhenReady("service.isUp")
+
+  - id: hyperledger-validating-peer-node
+    description: "A Hyperledger Fabric validating peer node"
+    itemType: entity
+    item:
+
+      type: kubernetes-resource
+      name: "Validating Peer Node"
+
+      brooklyn.config:
+        kubernetes.resource.file: "classpath://hyperledger-validating-peer.yaml"
+
+        provisioning.properties:
+          deployment: $brooklyn:config("hyperledger.peernode")
+
+        hyperledger.peernode:
+          $brooklyn:formatString:
+            - "vp%d"
+            - $brooklyn:attributeWhenReady("cluster.member.id")
+        hyperledger.rootnode: vp0
+        hyperledger.membersrvc: membersvc
+        hyperledger.secrets: $brooklyn:component("my-hyperledger-membersrvc-node").attributeWhenReady("secret.keys")
+
+        # NOTE how does hyperledger/fabric-peer:latest get tagged as hyperledger/fabric-baseimage:latest now?

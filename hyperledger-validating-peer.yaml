@@ -1,0 +1,118 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: hyperledger-validating-peer-node-service
+  namespace: hyperledger-fabric
+  labels:
+    app: hyperledger-fabric
+    role: validating-peer-node
+spec:
+  ports:
+  - name: "rest"
+    port: 7050
+    targetPort: 7050
+  - name: "peer-grpc"
+    port: 7051
+    targetPort: 7051
+  - name: "peer-cli"
+    port: 7052
+    targetPort: 7052
+  - name: "peer-events"
+    port: 7053
+    targetPort: 7053
+  selector:
+    app: hyperledger-fabric
+    role: validating-peer-node
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: hyperledger-validating-peer-node-deployment
+  namespace: hyperledger-fabric
+  labels:
+    app: hyperledger-fabric
+    role: validating-peer-nodetype
+  annotations:
+    scheduler.alpha.kubernetes.io/affinity: >
+        {
+          "podAntiAffinity": {
+            "requiredDuringSchedulingIgnoredDuringExecution": [
+              {
+                "labelSelector": {
+                  "matchExpressions": [
+                    {
+                      "key": "app",
+                      "operator": "In",
+                      "values": [ "hyperledger-fabric" ]
+                    }
+                  ]
+                },
+                "topologyKey": "kubernetes.io/hostname"
+             }
+            ]
+           }
+         }
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hyperledger-fabric
+      role: validating-peer-node
+  template:
+    metadata:
+      labels:
+        app: hyperledger-fabric
+        role: validating-peer-node
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: hyperledger-validating-peer-node
+          image: hyperledger/fabric-peer:latest
+          env:
+            - name: CORE_VM_ENDPOINT
+              value: "http://${config['hyperledger.peernode']}:4243"
+            - name: CORE_PEER_ID
+              value: "${config['hyperledger.peernode']}"
+            - name: CORE_PEER_ADDRESS
+              value: "${config['hyperledger.peernode']}:7051"
+            - name: CORE_PEER_ADDRESSAUTODETECT
+              value: "false"
+            - name: CORE_PEER_NETWORKID
+              value: "dev"
+            - name: CORE_LOGGING_LEVEL
+              value: "info"
+            - name: CORE_SECURITY_ENABLED
+              value: "true"
+            - name: CORE_SECURITY_PRIVACY
+              value: "true"
+            - name: CORE_SECURITY_ENROLLID
+              value: "test_${config['hyperledger.peernode']}"
+            - name: CORE_SECURITY_ENROLLSECRET
+              value: "${config['hyperledger.secrets'][attribute['cluster.member.id']]}"
+            - name: CORE_PEER_PKI_ECA_PADDR
+              value: "${config['hyperledger.membersrvc']}:7054"
+            - name: CORE_PEER_PKI_TCA_PADDR
+              value: "${config['hyperledger.membersrvc']}:7054"
+            - name: CORE_PEER_PKI_TLSCA_PADDR
+              value: "${config['hyperledger.membersrvc']}:7054"
+            - name: CORE_PEER_VALIDATOR_CONSENSUS_PLUGIN
+              value: "pbft"
+            - name: CORE_PBFT_GENERAL_MODE
+              value: "batch"
+            - name: CORE_PBFT_GENERAL_N
+              value: "${config['cluster.initial.size']}"
+            - name: CORE_PBFT_GENERAL_TIMEOUT_REQUEST
+              value: "${config['hyperledger.pbft.request.timeout']?c}s"
+            <#if config['hyperledger.isroot']>
+            - name: CORE_PEER_DISCOVERY_ROOTNODE
+              value: "${config['hyperledger.rootnode']}:7051"
+            </#if>
+          args:
+            - peer
+            - node
+            - start
+          ports:
+            - containerPort: 7050
+            - containerPort: 7051
+            - containerPort: 7052
+            - containerPort: 7053

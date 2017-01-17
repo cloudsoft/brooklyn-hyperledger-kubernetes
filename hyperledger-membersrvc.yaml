@@ -1,0 +1,68 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: hyperledger-membersrvc-node-service
+  namespace: hyperledger-fabric
+  labels:
+    app: hyperledger-fabric
+    role: membersrvc-node
+spec:
+  ports:
+  - name: "ecap"
+    port: 7054
+    targetPort: 7054
+  selector:
+    app: hyperledger-fabric
+    role: membersrvc-node
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: hyperledger-membersrvc-node-deployment
+  namespace: hyperledger-fabric
+  labels:
+    app: hyperledger-fabric
+    role: membersrvc-node
+  annotations:
+    scheduler.alpha.kubernetes.io/affinity: >
+        {
+          "podAntiAffinity": {
+            "requiredDuringSchedulingIgnoredDuringExecution": [
+              {
+                "labelSelector": {
+                  "matchExpressions": [
+                    {
+                      "key": "app",
+                      "operator": "In",
+                      "values": [ "hyperledger-fabric" ]
+                    }
+                  ]
+                },
+                "topologyKey": "kubernetes.io/hostname"
+             }
+            ]
+           }
+         }
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hyperledger-fabric
+      role: membersrvc
+  template:
+    metadata:
+      labels:
+        app: hyperledger-fabric
+        role: membersrvc
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: hyperledger-membersrvc
+          image: hyperledger/fabric-membersrvc:latest
+          env:
+            - name: CORE_LOGGING_LEVEL
+              value: "info"
+          args:
+            - membersrvc
+          ports:
+            - containerPort: 7054
