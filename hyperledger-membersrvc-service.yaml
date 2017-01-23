@@ -5,12 +5,12 @@ metadata:
   namespace: hyperledger-fabric
   labels:
     app: hyperledger-fabric
-    role: membersrvc-node
+    role: membersrvc
 spec:
   ports:
-  - name: "ecap"
-    port: 7054
-    targetPort: 7054
+    - name: "ecap"
+      port: 7054
+      targetPort: 7054
   selector:
     app: hyperledger-fabric
-    role: membersrvc-node
+    role: membersrvc

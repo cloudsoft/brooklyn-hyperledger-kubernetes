@@ -5,7 +5,7 @@ metadata:
   namespace: hyperledger-fabric
   labels:
     app: hyperledger-fabric
-    role: validating-peer-nodetype
+    role: validating-peer
   annotations:
     scheduler.alpha.kubernetes.io/affinity: >
         {
@@ -31,12 +31,12 @@ spec:
   selector:
     matchLabels:
       app: hyperledger-fabric
-      role: validating-peer-node
+      role: validating-peer
   template:
     metadata:
       labels:
         app: hyperledger-fabric
-        role: validating-peer-node
+        role: validating-peer
     spec:
       restartPolicy: Always
       containers:

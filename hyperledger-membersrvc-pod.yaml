@@ -5,7 +5,7 @@ metadata:
   namespace: hyperledger-fabric
   labels:
     app: hyperledger-fabric
-    role: membersrvc-node
+    role: membersrvc
   annotations:
     scheduler.alpha.kubernetes.io/affinity: >
         {

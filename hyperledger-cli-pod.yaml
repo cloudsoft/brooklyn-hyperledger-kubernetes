@@ -5,7 +5,7 @@ metadata:
   namespace: hyperledger-fabric
   labels:
     app: hyperledger-fabric
-    role: cli-node
+    role: cli
   annotations:
     scheduler.alpha.kubernetes.io/affinity: >
         {
@@ -27,39 +27,50 @@ metadata:
            }
          }
 spec:
-  restartPolicy: Always
-  containers:
-    - name: hyperledger-cli
-      image: hyperledger/fabric-peer:latest
-      env:
-        - name: CORE_VM_ENDPOINT
-          value: "http://${config['hyperledger.clinode']}:4243"
-        - name: CORE_PEER_ADDRESS
-          value: "${config['hyperledger.clinode']}:7051"
-        - name: CORE_PEER_ADDRESSAUTODETECT
-          value: "false"
-        - name: CORE_SECURITY_ENABLED
-          value: "true"
-        - name: CORE_SECURITY_PRIVACY
-          value: "true"
-        - name: HYPERLEDGER_ROOT_NODE_ADDRESS
-          value: "${config['hyperledger.rootnode']}"
-        - name: HYPERLEDGER_MEMBERSRVC_NODE_ADDRESS
-          value: "${config['hyperledger.membersrvc']}"
-        - name: APP_HOME
-          value: "/opt/gopath/src/github.com/hyperledger/fabric/examples/chaincode/go/asset_management/app"
-      args:
-        - /bin/bash
-        - -c
-        - >-
-          cd /opt/gopath/src/github.com/hyperledger/fabric/examples/chaincode/go/asset_management/app;
-          cp /opt/gopath/src/github.com/hyperledger/fabric/peer/core.yaml .;
-          sed -i "s/0.0.0.0/${config['hyperledger.rootnode']}/g" core.yaml;
-          sed -i "s/localhost/${config['hyperledger.membersrvc']}/g" core.yaml;
-          sed -i "s/30/${config['hyperledger.app.timeout']?c}/g" app.go;
-          curl -k -so infiniteloop.sh https://raw.githubusercontent.com/hyperledger/fabric/master/scripts/infiniteloop.sh;
-          chmod +x infiniteloop.sh;
-          ./infiniteloop.sh
-      ports:
-        - containerPort: 7051
-        - containerPort: 7052
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hyperledger-fabric
+      role: cli
+  template:
+    metadata:
+      labels:
+        app: hyperledger-fabric
+        role: cli
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: hyperledger-cli
+          image: hyperledger/fabric-peer:latest
+          env:
+            - name: CORE_VM_ENDPOINT
+              value: "http://${config['hyperledger.clinode']}:4243"
+            - name: CORE_PEER_ADDRESS
+              value: "${config['hyperledger.clinode']}:7051"
+            - name: CORE_PEER_ADDRESSAUTODETECT
+              value: "false"
+            - name: CORE_SECURITY_ENABLED
+              value: "true"
+            - name: CORE_SECURITY_PRIVACY
+              value: "true"
+            - name: HYPERLEDGER_ROOT_NODE_ADDRESS
+              value: "${config['hyperledger.rootnode']}"
+            - name: HYPERLEDGER_MEMBERSRVC_NODE_ADDRESS
+              value: "${config['hyperledger.membersrvc']}"
+            - name: APP_HOME
+              value: "/opt/gopath/src/github.com/hyperledger/fabric/examples/chaincode/go/asset_management/app"
+          args:
+            - /bin/bash
+            - -c
+            - >-
+              cd /opt/gopath/src/github.com/hyperledger/fabric/examples/chaincode/go/asset_management/app;
+              cp /opt/gopath/src/github.com/hyperledger/fabric/peer/core.yaml .;
+              sed -i "s/0.0.0.0/${config['hyperledger.rootnode']}/g" core.yaml;
+              sed -i "s/localhost/${config['hyperledger.membersrvc']}/g" core.yaml;
+              sed -i "s/30/${config['hyperledger.app.timeout']?c}/g" app.go;
+              curl -k -so infiniteloop.sh https://raw.githubusercontent.com/hyperledger/fabric/master/scripts/infiniteloop.sh;
+              chmod +x infiniteloop.sh;
+              ./infiniteloop.sh
+          ports:
+            - containerPort: 7051
+            - containerPort: 7052
