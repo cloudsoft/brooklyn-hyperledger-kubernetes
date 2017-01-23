@@ -145,7 +145,7 @@ brooklyn.catalog:
           hyperledger.peernode:
             $brooklyn:formatString:
               - "vp%d"
-              - $brooklyn:attributeWhenReady("cluster.member.id")
+              - $brooklyn:config("cluster.member.id")
           hyperledger.rootnode: vp0
           hyperledger.membersrvc: membersrvc
           hyperledger.secrets: $brooklyn:component("my-hyperledger-membersrvc-node").attributeWhenReady("secret.keys")
