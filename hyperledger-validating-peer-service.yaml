@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ${config['hyperledger.peernode']}
+  namespace: hyperledger-fabric
+  labels:
+    name: ${config['hyperledger.peernode']}
+    app: hyperledger-fabric
+    role: validating-peer
+spec:
+  ports:
+    - name: "rest"
+      port: 7050
+      targetPort: 7050
+    - name: "peer-grpc"
+      port: 7051
+      targetPort: 7051
+    - name: "peer-cli"
+      port: 7052
+      targetPort: 7052
+    - name: "peer-events"
+      port: 7053
+      targetPort: 7053
+  selector:
+    name: ${config['hyperledger.peernode']}
+    app: hyperledger-fabric
+    role: validating-peer

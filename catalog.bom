@@ -1,5 +1,5 @@
 brooklyn.catalog:
-  version: 0.10.0
+  version: 0.11.0
 
   publish:
     description: |
@@ -116,39 +116,59 @@ brooklyn.catalog:
 
           firstMemberSpec:
             $brooklyn:entitySpec:
-              type: hyperledger-validating-peer-node
+              type: hyperledger-validating-peer
               id: my-hyperledger-root-node
-              name: "Root Validating Peer Pod"
+              name: "Root Validating Peer"
 
               brooklyn.config:
                 hyperledger.isroot: true
 
           memberSpec:
             $brooklyn:entitySpec:
-              type: hyperledger-validating-peer-node
-              name: "Validating Peer Pod"
+              type: hyperledger-validating-peer
+              name: "Validating Peer"
 
               brooklyn.config:
                 hyperledger.isroot: false
                 provision.latch: $brooklyn:component("my-hyperledger-root-node").attributeWhenReady("service.isUp")
 
-    - id: hyperledger-validating-peer-node
-      description: "A Hyperledger Fabric validating peer node"
+    - id: hyperledger-validating-peer
+      description: "A Hyperledger Fabric validating peer"
       itemType: entity
       item:
-        type: io.cloudsoft.amp.containerservice.kubernetes.entity.KubernetesResource
-        name: "Validating Peer Node"
+        type: org.apache.brooklyn.entity.stock.BasicStartable
 
         brooklyn.config:
-          resource: "https://raw.githubusercontent.com/cloudsoft/kubernetes-hyperledger/master/hyperledger-validating-peer-pod.yaml"
-
           hyperledger.peernode:
             $brooklyn:formatString:
               - "vp%d"
               - $brooklyn:config("cluster.member.id")
+
+        brooklyn.children:
+          - type: hyperledger-validating-peer-node
+          - type: hyperledger-validating-peer-service
+
+    - id: hyperledger-validating-peer-node
+      itemType: entity
+      item:
+        type: io.cloudsoft.amp.containerservice.kubernetes.entity.KubernetesResource
+        name: "Validating Peer Pod"
+
+        brooklyn.config:
+          resource: "https://raw.githubusercontent.com/cloudsoft/kubernetes-hyperledger/master/hyperledger-validating-peer-pod.yaml"
+
           hyperledger.rootnode: vp0
           hyperledger.membersrvc: membersrvc
           hyperledger.secrets: $brooklyn:component("my-hyperledger-membersrvc-node").attributeWhenReady("secret.keys")
+
+    - id: hyperledger-validating-peer-service
+      itemType: entity
+      item:
+        type: io.cloudsoft.amp.containerservice.kubernetes.entity.KubernetesResource
+        name: "Validating Peer Service"
+
+        brooklyn.config:
+          resource: "https://raw.githubusercontent.com/cloudsoft/kubernetes-hyperledger/master/hyperledger-validating-peer-service.yaml"
 
     - id: hyperledger-namespace
       description: "Hyperledger namespace for Kubernetes"
