@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: hyperledger-cli-service
+  name: cli
   namespace: hyperledger-fabric
   labels:
     app: hyperledger-fabric

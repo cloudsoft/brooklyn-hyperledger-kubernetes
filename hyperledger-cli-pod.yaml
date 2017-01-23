@@ -34,7 +34,9 @@ spec:
       role: cli
   template:
     metadata:
+      name: cli
       labels:
+        name: cli
         app: hyperledger-fabric
         role: cli
     spec:

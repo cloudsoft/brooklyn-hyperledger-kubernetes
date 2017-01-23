@@ -34,7 +34,9 @@ spec:
       role: membersrvc
   template:
     metadata:
+      name: membersrvc
       labels:
+        name: membersrvc
         app: hyperledger-fabric
         role: membersrvc
     spec:

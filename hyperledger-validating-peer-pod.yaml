@@ -30,11 +30,14 @@ spec:
   replicas: 1
   selector:
     matchLabels:
+      name: ${config['hyperledger.peernode']}
       app: hyperledger-fabric
       role: validating-peer
   template:
     metadata:
+      name: ${config['hyperledger.peernode']}
       labels:
+        name: ${config['hyperledger.peernode']}
         app: hyperledger-fabric
         role: validating-peer
     spec:
