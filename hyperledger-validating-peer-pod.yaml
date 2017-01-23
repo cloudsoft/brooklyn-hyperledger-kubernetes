@@ -76,7 +76,7 @@ spec:
             - name: CORE_PBFT_GENERAL_N
               value: "${config['cluster.initial.size']}"
             - name: CORE_PBFT_GENERAL_TIMEOUT_REQUEST
-              value: "${config['hyperledger.pbft.request.timeout']?c}s"
+              value: "${config['hyperledger.app.timeout']?c}s"
             <#if config['hyperledger.isroot']>
             - name: CORE_PEER_DISCOVERY_ROOTNODE
               value: "${config['hyperledger.rootnode']}:7051"
