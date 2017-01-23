@@ -7,6 +7,8 @@ brooklyn.catalog:
     license_code: Apache-2.0
     icon_url: https://raw.githubusercontent.com/cloudsoft/brooklyn-hyperledger/master/hyperledger-fabric-icon.png
 
+    # NOTE how does hyperledger/fabric-peer:latest get tagged as hyperledger/fabric-baseimage:latest now?
+
   items:
     - id: hyperledger-fabric-single-cluster
       item:
@@ -14,6 +16,9 @@ brooklyn.catalog:
         type: org.apache.brooklyn.entity.stock.BasicApplication
 
         brooklyn.children:
+          - type: hyperledger-namespace
+            id: my-hyperledger-namespace
+
           - type: hyperledger-vp-cluster
             name: "Hyperledger Validating Peer Cluster"
             id: my-hyperledger-fabric-cluster
@@ -33,6 +38,8 @@ brooklyn.catalog:
 
         brooklyn.config:
           resource: "https://raw.githubusercontent.com/cloudsoft/kubernetes-hyperledger/master/hyperledger-membersrvc.yaml"
+
+          launch.latch: $brooklyn:component("my-hyperledger-namespace").attributeWhenReady("service.isUp")
 
         brooklyn.initializers:
         - type: org.apache.brooklyn.core.sensor.StaticSensor
@@ -66,7 +73,7 @@ brooklyn.catalog:
           hyperledger.rootnode: vp0
           hyperledger.membersrvc: membersrvc
 
-          # NOTE how does hyperledger/fabric-peer:latest get tagged as hyperledger/fabric-baseimage:latest now?
+          launch.latch: $brooklyn:component("my-hyperledger-namespace").attributeWhenReady("service.isUp")
 
     - id: hyperledger-vp-cluster
       description: "A cluster of Hyperledger Fabric validating peer nodes"
@@ -115,4 +122,12 @@ brooklyn.catalog:
           hyperledger.membersrvc: membersrvc
           hyperledger.secrets: $brooklyn:component("my-hyperledger-membersrvc-node").attributeWhenReady("secret.keys")
 
-          # NOTE how does hyperledger/fabric-peer:latest get tagged as hyperledger/fabric-baseimage:latest now?
+    - id: hyperledger-namespace
+      description: "Hyperledger namespace for Kubernetes"
+      itemType: entity
+      item:
+        type: io.cloudsoft.amp.containerservice.kubernetes.entity.KubernetesResource
+        name: "Hyperledger Namespace"
+
+        brooklyn.config:
+          resource: "https://raw.githubusercontent.com/cloudsoft/kubernetes-hyperledger/master/hyperledger-namespace.yaml"

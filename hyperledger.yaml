@@ -6,4 +6,5 @@ location:
 services:
   - type: hyperledger-fabric-single-cluster
     brooklyn.config:
+      hyperledger.app.timeout: 120
       hyperledger.peers: 2
