@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: hyperledger-membersrvc-node-service
+  namespace: hyperledger-fabric
+  labels:
+    app: hyperledger-fabric
+    role: membersrvc-node
+spec:
+  ports:
+  - name: "ecap"
+    port: 7054
+    targetPort: 7054
+  selector:
+    app: hyperledger-fabric
+    role: membersrvc-node

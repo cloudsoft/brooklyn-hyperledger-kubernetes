@@ -23,8 +23,14 @@ brooklyn.catalog:
             name: "Hyperledger Validating Peer Cluster"
             id: my-hyperledger-fabric-cluster
 
+          - type: hyperledger-membersrvc-service
+            id: my-hyperledger-membersrvc-service
+
           - type: hyperledger-membersrvc-node
             id: my-hyperledger-membersrvc-node
+
+          - type: hyperledger-cli-service
+            id: my-hyperledger-cli-service
 
           - type: hyperledger-cli-node
             id: my-hyperledger-cli-node
@@ -37,7 +43,7 @@ brooklyn.catalog:
         name: "Membership Services Node"
 
         brooklyn.config:
-          resource: "https://raw.githubusercontent.com/cloudsoft/kubernetes-hyperledger/master/hyperledger-membersrvc.yaml"
+          resource: "https://raw.githubusercontent.com/cloudsoft/kubernetes-hyperledger/master/hyperledger-membersrvc-pod.yaml"
 
           launch.latch: $brooklyn:component("my-hyperledger-namespace").attributeWhenReady("service.isUp")
 
@@ -58,22 +64,39 @@ brooklyn.catalog:
               - "BxP7QNh778gI"
               - "wu3F1EwJWHvQ"
 
+    - id: hyperledger-membersrvc-service
+      itemType: entity
+      item:
+        type: io.cloudsoft.amp.containerservice.kubernetes.entity.KubernetesResource
+        name: "Membership Services Node"
+
+        brooklyn.config:
+          resource: "https://raw.githubusercontent.com/cloudsoft/kubernetes-hyperledger/master/hyperledger-membersrvc-service.yaml"
+
     - id: hyperledger-cli-node
       description: "A Hyperledger Fabric CLI node"
       itemType: entity
       item:
-
         type: io.cloudsoft.amp.containerservice.kubernetes.entity.KubernetesResource
         name: "CLI Node"
 
         brooklyn.config:
-          resource: "https://raw.githubusercontent.com/cloudsoft/kubernetes-hyperledger/master/hyperledger-cli.yaml"
+          resource: "https://raw.githubusercontent.com/cloudsoft/kubernetes-hyperledger/master/hyperledger-cli-pod.yaml"
 
           hyperledger.clinode: cli
           hyperledger.rootnode: vp0
           hyperledger.membersrvc: membersrvc
 
           launch.latch: $brooklyn:component("my-hyperledger-namespace").attributeWhenReady("service.isUp")
+
+    - id: hyperledger-cli-service
+      itemType: entity
+      item:
+        type: io.cloudsoft.amp.containerservice.kubernetes.entity.KubernetesResource
+        name: "CLI Node"
+
+        brooklyn.config:
+          resource: "https://raw.githubusercontent.com/cloudsoft/kubernetes-hyperledger/master/hyperledger-cli-service.yaml"
 
     - id: hyperledger-vp-cluster
       description: "A cluster of Hyperledger Fabric validating peer nodes"
@@ -112,7 +135,7 @@ brooklyn.catalog:
         name: "Validating Peer Node"
 
         brooklyn.config:
-          resource: "https://raw.githubusercontent.com/cloudsoft/kubernetes-hyperledger/master/hyperledger-validating-peer.yaml"
+          resource: "https://raw.githubusercontent.com/cloudsoft/kubernetes-hyperledger/master/hyperledger-validating-peer-pod.yaml"
 
           hyperledger.peernode:
             $brooklyn:formatString:
