@@ -27,7 +27,7 @@ spec:
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: hyperledger-validating-peer-node-deployment
+  name: ${config['hyperledger.peernode']}
   namespace: hyperledger-fabric
   labels:
     app: hyperledger-fabric

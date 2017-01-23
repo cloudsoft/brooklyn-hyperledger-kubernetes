@@ -18,7 +18,7 @@ spec:
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: hyperledger-membersrvc-node-deployment
+  name: membersrvc
   namespace: hyperledger-fabric
   labels:
     app: hyperledger-fabric

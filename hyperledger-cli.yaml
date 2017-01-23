@@ -21,7 +21,7 @@ spec:
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: hyperledger-cli-deployment
+  name: cli
   namespace: hyperledger-fabric
   labels:
     app: hyperledger-fabric

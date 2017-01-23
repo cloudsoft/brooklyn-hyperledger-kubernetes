@@ -46,14 +46,11 @@ brooklyn.catalog:
     itemType: entity
     item:
 
-      type: kubernetes-resource
+      type: io.cloudsoft.amp.containerservice.kubernetes.entity.KubernetesResource
       name: "Membership Services Node"
 
       brooklyn.config:
-        kubernetes.resource.file: "classpath://hyperledger-membersrvc.yaml"
-
-        provisioning.properties:
-          deployment: "membersrvc"
+        resource: "https://raw.githubusercontent.com/cloudsoft/kubernetes-hyperledger/master/hyperledger-membersrvc.yaml"
 
       brooklyn.initializers:
       - type: org.apache.brooklyn.core.sensor.StaticSensor
@@ -77,18 +74,15 @@ brooklyn.catalog:
     itemType: entity
     item:
 
-      type: kubernetes-resource
+      type: io.cloudsoft.amp.containerservice.kubernetes.entity.KubernetesResource
       name: "CLI Node"
 
       brooklyn.config:
-        kubernetes.resource.file: "classpath://hyperledger-cli.yaml"
-
-        provisioning.properties:
-          deployment: $brooklyn:config("hyperledger.clinode")
+        resource: "https://raw.githubusercontent.com/cloudsoft/kubernetes-hyperledger/master/hyperledger-cli.yaml"
 
         hyperledger.clinode: cli
         hyperledger.rootnode: vp0
-        hyperledger.membersrvc: membersvc
+        hyperledger.membersrvc: membersrvc
 
         # NOTE how does hyperledger/fabric-peer:latest get tagged as hyperledger/fabric-baseimage:latest now?
 
@@ -100,7 +94,7 @@ brooklyn.catalog:
       type: org.apache.brooklyn.entity.group.DynamicCluster
 
       brooklyn.config:
-        initialSize: $brooklyn:config("hyperledger.peers.per.location")
+        initialSize: $brooklyn:config("hyperledger.peers")
 
         firstMemberSpec:
           $brooklyn:entitySpec:
@@ -115,7 +109,7 @@ brooklyn.catalog:
         memberSpec:
           $brooklyn:entitySpec:
             type: hyperledger-validating-peer-node
-            name: "Validating Peer Docker Node"
+            name: "Validating Peer Node"
 
             brooklyn.config:
               hyperledger.isroot: false
@@ -126,21 +120,18 @@ brooklyn.catalog:
     itemType: entity
     item:
 
-      type: kubernetes-resource
+      type: io.cloudsoft.amp.containerservice.kubernetes.entity.KubernetesResource
       name: "Validating Peer Node"
 
       brooklyn.config:
-        kubernetes.resource.file: "classpath://hyperledger-validating-peer.yaml"
-
-        provisioning.properties:
-          deployment: $brooklyn:config("hyperledger.peernode")
+        resource: "https://raw.githubusercontent.com/cloudsoft/kubernetes-hyperledger/master/hyperledger-validating-peer.yaml"
 
         hyperledger.peernode:
           $brooklyn:formatString:
             - "vp%d"
             - $brooklyn:attributeWhenReady("cluster.member.id")
         hyperledger.rootnode: vp0
-        hyperledger.membersrvc: membersvc
+        hyperledger.membersrvc: membersrvc
         hyperledger.secrets: $brooklyn:component("my-hyperledger-membersrvc-node").attributeWhenReady("secret.keys")
 
         # NOTE how does hyperledger/fabric-peer:latest get tagged as hyperledger/fabric-baseimage:latest now?
