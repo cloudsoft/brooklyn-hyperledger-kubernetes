@@ -22,30 +22,38 @@ brooklyn.catalog:
           - type: hyperledger-vp-cluster
             name: "Hyperledger Validating Peer Cluster"
             id: my-hyperledger-fabric-cluster
+            brooklyn.config:
+              provision.latch: $brooklyn:component("my-hyperledger-membersrvc-node").attributeWhenReady("service.isUp")
 
           - type: hyperledger-membersrvc-service
             id: my-hyperledger-membersrvc-service
+            brooklyn.config:
+              provision.latch: $brooklyn:component("my-hyperledger-namespace").attributeWhenReady("service.isUp")
 
           - type: hyperledger-membersrvc-node
             id: my-hyperledger-membersrvc-node
+            brooklyn.config:
+              provision.latch: $brooklyn:component("my-hyperledger-namespace").attributeWhenReady("service.isUp")
 
           - type: hyperledger-cli-service
             id: my-hyperledger-cli-service
+            brooklyn.config:
+              provision.latch: $brooklyn:component("my-hyperledger-namespace").attributeWhenReady("service.isUp")
 
           - type: hyperledger-cli-node
             id: my-hyperledger-cli-node
+            brooklyn.config:
+              provision.latch: $brooklyn:component("my-hyperledger-namespace").attributeWhenReady("service.isUp")
 
     - id: hyperledger-membersrvc-node
       description: "A Hyperledger Fabric membership services node"
       itemType: entity
       item:
         type: io.cloudsoft.amp.containerservice.kubernetes.entity.KubernetesResource
-        name: "Membership Services Node"
+        name: "Membership Services Pod"
 
         brooklyn.config:
           resource: "https://raw.githubusercontent.com/cloudsoft/kubernetes-hyperledger/master/hyperledger-membersrvc-pod.yaml"
-
-          launch.latch: $brooklyn:component("my-hyperledger-namespace").attributeWhenReady("service.isUp")
 
         brooklyn.initializers:
         - type: org.apache.brooklyn.core.sensor.StaticSensor
@@ -68,7 +76,7 @@ brooklyn.catalog:
       itemType: entity
       item:
         type: io.cloudsoft.amp.containerservice.kubernetes.entity.KubernetesResource
-        name: "Membership Services Node"
+        name: "Membership Services Service"
 
         brooklyn.config:
           resource: "https://raw.githubusercontent.com/cloudsoft/kubernetes-hyperledger/master/hyperledger-membersrvc-service.yaml"
@@ -78,7 +86,7 @@ brooklyn.catalog:
       itemType: entity
       item:
         type: io.cloudsoft.amp.containerservice.kubernetes.entity.KubernetesResource
-        name: "CLI Node"
+        name: "CLI Pod"
 
         brooklyn.config:
           resource: "https://raw.githubusercontent.com/cloudsoft/kubernetes-hyperledger/master/hyperledger-cli-pod.yaml"
@@ -87,13 +95,11 @@ brooklyn.catalog:
           hyperledger.rootnode: vp0
           hyperledger.membersrvc: membersrvc
 
-          launch.latch: $brooklyn:component("my-hyperledger-namespace").attributeWhenReady("service.isUp")
-
     - id: hyperledger-cli-service
       itemType: entity
       item:
         type: io.cloudsoft.amp.containerservice.kubernetes.entity.KubernetesResource
-        name: "CLI Node"
+        name: "CLI Service"
 
         brooklyn.config:
           resource: "https://raw.githubusercontent.com/cloudsoft/kubernetes-hyperledger/master/hyperledger-cli-service.yaml"
@@ -112,20 +118,19 @@ brooklyn.catalog:
             $brooklyn:entitySpec:
               type: hyperledger-validating-peer-node
               id: my-hyperledger-root-node
-              name: "Root Validating Peer Node"
+              name: "Root Validating Peer Pod"
 
               brooklyn.config:
                 hyperledger.isroot: true
-                launch.latch: $brooklyn:component("my-hyperledger-membersrvc-node").attributeWhenReady("service.isUp")
 
           memberSpec:
             $brooklyn:entitySpec:
               type: hyperledger-validating-peer-node
-              name: "Validating Peer Docker Node"
+              name: "Validating Peer Pod"
 
               brooklyn.config:
                 hyperledger.isroot: false
-                launch.latch: $brooklyn:component("my-hyperledger-root-node").attributeWhenReady("service.isUp")
+                provision.latch: $brooklyn:component("my-hyperledger-root-node").attributeWhenReady("service.isUp")
 
     - id: hyperledger-validating-peer-node
       description: "A Hyperledger Fabric validating peer node"
