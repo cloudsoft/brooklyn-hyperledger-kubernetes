@@ -17,33 +17,31 @@ brooklyn.catalog:
 
         brooklyn.children:
           - type: hyperledger-namespace
-            id: my-hyperledger-namespace
+            id: hyperledger-namespace
 
           - type: hyperledger-vp-cluster
             name: "Hyperledger Validating Peer Cluster"
-            id: my-hyperledger-fabric-cluster
-            brooklyn.config:
-              provision.latch: $brooklyn:component("my-hyperledger-membersrvc-node").attributeWhenReady("service.isUp")
+            id: hyperledger-vp-cluster
 
           - type: hyperledger-membersrvc-service
-            id: my-hyperledger-membersrvc-service
+            id: hyperledger-membersrvc-service
             brooklyn.config:
-              provision.latch: $brooklyn:component("my-hyperledger-namespace").attributeWhenReady("service.isUp")
+              provision.latch: $brooklyn:component("hyperledger-namespace").attributeWhenReady("service.isUp")
 
           - type: hyperledger-membersrvc-node
-            id: my-hyperledger-membersrvc-node
+            id: hyperledger-membersrvc-node
             brooklyn.config:
-              provision.latch: $brooklyn:component("my-hyperledger-namespace").attributeWhenReady("service.isUp")
+              provision.latch: $brooklyn:component("hyperledger-namespace").attributeWhenReady("service.isUp")
 
           - type: hyperledger-cli-service
-            id: my-hyperledger-cli-service
+            id: hyperledger-cli-service
             brooklyn.config:
-              provision.latch: $brooklyn:component("my-hyperledger-namespace").attributeWhenReady("service.isUp")
+              provision.latch: $brooklyn:component("hyperledger-namespace").attributeWhenReady("service.isUp")
 
           - type: hyperledger-cli-node
-            id: my-hyperledger-cli-node
+            id: hyperledger-cli-node
             brooklyn.config:
-              provision.latch: $brooklyn:component("my-hyperledger-namespace").attributeWhenReady("service.isUp")
+              provision.latch: $brooklyn:component("hyperledger-namespace").attributeWhenReady("service.isUp")
 
     - id: hyperledger-membersrvc-node
       description: "A Hyperledger Fabric membership services node"
@@ -117,20 +115,22 @@ brooklyn.catalog:
           firstMemberSpec:
             $brooklyn:entitySpec:
               type: hyperledger-validating-peer
-              id: my-hyperledger-root-node
+              id: hyperledger-root-node
               name: "Root Validating Peer"
 
               brooklyn.config:
                 hyperledger.isroot: true
+                provision.latch: $brooklyn:component("hyperledger-membersrvc-node").attributeWhenReady("service.isUp")
 
           memberSpec:
             $brooklyn:entitySpec:
               type: hyperledger-validating-peer
+              id: hyperledger-validating-peer
               name: "Validating Peer"
 
               brooklyn.config:
                 hyperledger.isroot: false
-                provision.latch: $brooklyn:component("my-hyperledger-root-node").attributeWhenReady("service.isUp")
+                provision.latch: $brooklyn:component("hyperledger-root-node").attributeWhenReady("service.isUp")
 
     - id: hyperledger-validating-peer
       description: "A Hyperledger Fabric validating peer"
@@ -159,7 +159,7 @@ brooklyn.catalog:
 
           hyperledger.rootnode: vp0
           hyperledger.membersrvc: membersrvc
-          hyperledger.secrets: $brooklyn:component("my-hyperledger-membersrvc-node").attributeWhenReady("secret.keys")
+          hyperledger.secrets: $brooklyn:component("hyperledger-membersrvc-node").attributeWhenReady("secret.keys")
 
     - id: hyperledger-validating-peer-service
       itemType: entity
