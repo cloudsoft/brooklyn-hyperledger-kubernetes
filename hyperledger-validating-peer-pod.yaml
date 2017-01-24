@@ -2,30 +2,10 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: ${config['hyperledger.peernode']}
-  namespace: hyperledger-fabric
+  namespace: ${config['hyperledger.namespace']}
   labels:
     app: hyperledger-fabric
     role: validating-peer
-  annotations:
-    scheduler.alpha.kubernetes.io/affinity: >
-        {
-          "podAntiAffinity": {
-            "requiredDuringSchedulingIgnoredDuringExecution": [
-              {
-                "labelSelector": {
-                  "matchExpressions": [
-                    {
-                      "key": "app",
-                      "operator": "In",
-                      "values": [ "hyperledger-fabric" ]
-                    }
-                  ]
-                },
-                "topologyKey": "kubernetes.io/hostname"
-             }
-            ]
-           }
-         }
 spec:
   replicas: 1
   selector:
@@ -40,6 +20,26 @@ spec:
         name: ${config['hyperledger.peernode']}
         app: hyperledger-fabric
         role: validating-peer
+      annotations:
+        scheduler.alpha.kubernetes.io/affinity: >
+            {
+              "podAntiAffinity": {
+                "requiredDuringSchedulingIgnoredDuringExecution": [
+                  {
+                    "labelSelector": {
+                      "matchExpressions": [
+                        {
+                          "key": "app",
+                          "operator": "In",
+                          "values": [ "hyperledger-fabric" ]
+                        }
+                      ]
+                    },
+                    "topologyKey": "kubernetes.io/hostname"
+                 }
+                ]
+               }
+             }
     spec:
       restartPolicy: Always
       containers:

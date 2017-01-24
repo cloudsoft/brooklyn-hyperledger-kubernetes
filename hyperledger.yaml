@@ -4,7 +4,8 @@ location:
     identity: admin
     credential: admin
 services:
-  - type: hyperledger-fabric-single-cluster:0.11.0
+  - type: hyperledger-fabric-single-cluster:0.13.0
     brooklyn.config:
-      hyperledger.app.timeout: 120
+      hyperledger.app.timeout: 60
       hyperledger.peers: 4
+      hyperledger.namespace: "hyperledger-demo"

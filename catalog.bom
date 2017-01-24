@@ -1,5 +1,5 @@
 brooklyn.catalog:
-  version: 0.11.0
+  version: 0.13.0
 
   publish:
     description: |
@@ -10,81 +10,154 @@ brooklyn.catalog:
     # NOTE how does hyperledger/fabric-peer:latest get tagged as hyperledger/fabric-baseimage:latest now?
 
   items:
+    - id: hyperledger-fabric-template
+      description: |
+        A Hyperledger Fabric of a membership services node, a CLI node, a root
+        validating peer node, and cluster of validating peer nodes
+      name: "hyperledger-fabric"
+      iconUrl: https://raw.githubusercontent.com/cloudsoft/brooklyn-hyperledger/master/hyperledger-fabric-icon.png
+      itemType: template
+      item:
+        services:
+          - type: hyperledger-fabric-single-cluster
+            name: "hyperledger-fabric-single-cluster"
+
+            brooklyn.parameters:
+              - name: hyperledger.app.timeout
+                label: "Hyperledger Application Timeout"
+                description: |
+                  The timeout in seconds for the Hyperledger application
+                type: integer
+                default: 120
+              - name: hyperledger.peers
+                label: "Hyperledger Peers"
+                description: |
+                  The number of Hyperledger peers in the cluster
+                type: integer
+                default: 4
+              - name: hyperledger.namespace
+                label: "Hyperledger Namespace"
+                description: |
+                  The Kubernetes namespace for Hyperledger components
+                type: string
+                default: "hyperledger-fabric"
+
     - id: hyperledger-fabric-single-cluster
       item:
-        name: "Hyperledger Fabric Single-cluster"
         type: org.apache.brooklyn.entity.stock.BasicApplication
+        name: "hyperledger-fabric-single-cluster"
+
+        brooklyn.parameters:
+          - name: hyperledger.app.timeout
+            label: "Hyperledger Application Timeout"
+            description: |
+              The timeout in seconds for the Hyperledger application
+            type: integer
+            default: 120
+          - name: hyperledger.peers
+            label: "Hyperledger Peers"
+            description: |
+              The number of Hyperledger peers in the cluster
+            type: integer
+            default: 4
+          - name: hyperledger.namespace
+            label: "Hyperledger Namespace"
+            description: |
+              The Kubernetes namespace for Hyperledger components
+            type: string
+            default: "hyperledger-fabric"
 
         brooklyn.children:
           - type: hyperledger-namespace
             id: hyperledger-namespace
 
           - type: hyperledger-vp-cluster
-            name: "Hyperledger Validating Peer Cluster"
             id: hyperledger-vp-cluster
 
+          - type: hyperledger-membersrvc
+            id: hyperledger-membersrvc
+
+          - type: hyperledger-cli
+            id: hyperledger-cli
+
+    - id: hyperledger-membersrvc
+      description: |
+        Hyperledger Fabric membership services
+      itemType: entity
+      item:
+        type: org.apache.brooklyn.entity.stock.BasicStartable
+        name: "hyperledger-membersrvc"
+
+        brooklyn.initializers:
+          - type: org.apache.brooklyn.core.sensor.StaticSensor
+            brooklyn.config:
+              name: secret.keys
+              targetType: java.util.List
+              static.value:
+                - "MwYpmSRjupbT"
+                - "5wgHK9qqYaPy"
+                - "vQelbRvja7cJ"
+                - "9LKqKH5peurL"
+                - "Pqh90CEW5juZ"
+                - "FfdvDkAdY81P"
+                - "QiXJgHyV4t7A"
+                - "twoKZouEyLyB"
+                - "BxP7QNh778gI"
+                - "wu3F1EwJWHvQ"
+
+        brooklyn.children:
           - type: hyperledger-membersrvc-service
             id: hyperledger-membersrvc-service
             brooklyn.config:
               provision.latch: $brooklyn:component("hyperledger-namespace").attributeWhenReady("service.isUp")
 
-          - type: hyperledger-membersrvc-node
-            id: hyperledger-membersrvc-node
+          - type: hyperledger-membersrvc-pod
+            id: hyperledger-membersrvc-pod
             brooklyn.config:
               provision.latch: $brooklyn:component("hyperledger-namespace").attributeWhenReady("service.isUp")
 
-          - type: hyperledger-cli-service
-            id: hyperledger-cli-service
-            brooklyn.config:
-              provision.latch: $brooklyn:component("hyperledger-namespace").attributeWhenReady("service.isUp")
-
-          - type: hyperledger-cli-node
-            id: hyperledger-cli-node
-            brooklyn.config:
-              provision.latch: $brooklyn:component("hyperledger-namespace").attributeWhenReady("service.isUp")
-
-    - id: hyperledger-membersrvc-node
-      description: "A Hyperledger Fabric membership services node"
+    - id: hyperledger-membersrvc-pod
       itemType: entity
       item:
         type: io.cloudsoft.amp.containerservice.kubernetes.entity.KubernetesResource
-        name: "Membership Services Pod"
+        name: "hyperledger-membersrvc-pod"
 
         brooklyn.config:
           resource: "https://raw.githubusercontent.com/cloudsoft/kubernetes-hyperledger/master/hyperledger-membersrvc-pod.yaml"
-
-        brooklyn.initializers:
-        - type: org.apache.brooklyn.core.sensor.StaticSensor
-          brooklyn.config:
-            name: secret.keys
-            targetType: java.util.List
-            static.value:
-              - "MwYpmSRjupbT"
-              - "5wgHK9qqYaPy"
-              - "vQelbRvja7cJ"
-              - "9LKqKH5peurL"
-              - "Pqh90CEW5juZ"
-              - "FfdvDkAdY81P"
-              - "QiXJgHyV4t7A"
-              - "twoKZouEyLyB"
-              - "BxP7QNh778gI"
-              - "wu3F1EwJWHvQ"
 
     - id: hyperledger-membersrvc-service
       itemType: entity
       item:
         type: io.cloudsoft.amp.containerservice.kubernetes.entity.KubernetesResource
-        name: "Membership Services Service"
+        name: "hyperledger-membersrvc-service"
 
         brooklyn.config:
           resource: "https://raw.githubusercontent.com/cloudsoft/kubernetes-hyperledger/master/hyperledger-membersrvc-service.yaml"
 
-    - id: hyperledger-cli-node
-      description: "A Hyperledger Fabric CLI node"
+    - id: hyperledger-cli
+      description: |
+        Hyperledger Fabric CLI
+      itemType: entity
+      item:
+        type: org.apache.brooklyn.entity.stock.BasicStartable
+        name: "hyperledger-cli"
+
+        brooklyn.children:
+          - type: hyperledger-cli-service
+            id: hyperledger-cli-service
+            brooklyn.config:
+              provision.latch: $brooklyn:component("hyperledger-namespace").attributeWhenReady("service.isUp")
+
+          - type: hyperledger-cli-pod
+            id: hyperledger-cli-pod
+            brooklyn.config:
+              provision.latch: $brooklyn:component("hyperledger-namespace").attributeWhenReady("service.isUp")
+
+    - id: hyperledger-cli-pod
       itemType: entity
       item:
         type: io.cloudsoft.amp.containerservice.kubernetes.entity.KubernetesResource
-        name: "CLI Pod"
+        name: "hyperledger-cli-pod"
 
         brooklyn.config:
           resource: "https://raw.githubusercontent.com/cloudsoft/kubernetes-hyperledger/master/hyperledger-cli-pod.yaml"
@@ -97,15 +170,15 @@ brooklyn.catalog:
       itemType: entity
       item:
         type: io.cloudsoft.amp.containerservice.kubernetes.entity.KubernetesResource
-        name: "CLI Service"
+        name: "hyperledger-cli-service"
 
         brooklyn.config:
           resource: "https://raw.githubusercontent.com/cloudsoft/kubernetes-hyperledger/master/hyperledger-cli-service.yaml"
 
     - id: hyperledger-vp-cluster
-      description: "A cluster of Hyperledger Fabric validating peer nodes"
-      name: "Hyperledger Fabric Cluster"
-      iconUrl: https://raw.githubusercontent.com/cloudsoft/brooklyn-hyperledger/master/hyperledger-fabric-icon.png
+      name: "hyperledger-vp-cluster"
+      description: |
+        A cluster of Hyperledger Fabric validating peers
       item:
         type: org.apache.brooklyn.entity.group.DynamicCluster
 
@@ -115,25 +188,26 @@ brooklyn.catalog:
           firstMemberSpec:
             $brooklyn:entitySpec:
               type: hyperledger-validating-peer
-              id: hyperledger-root-node
-              name: "Root Validating Peer"
+              id: hyperledger-root-validating-peer
+              name: "hyperledger-root-validating-peer"
 
               brooklyn.config:
                 hyperledger.isroot: true
-                provision.latch: $brooklyn:component("hyperledger-membersrvc-node").attributeWhenReady("service.isUp")
+                provision.latch: $brooklyn:component("hyperledger-membersrvc").attributeWhenReady("service.isUp")
 
           memberSpec:
             $brooklyn:entitySpec:
               type: hyperledger-validating-peer
               id: hyperledger-validating-peer
-              name: "Validating Peer"
+              name: "hyperledger-validating-peer"
 
               brooklyn.config:
                 hyperledger.isroot: false
-                provision.latch: $brooklyn:component("hyperledger-root-node").attributeWhenReady("service.isUp")
+                provision.latch: $brooklyn:component("hyperledger-root-validating-peer").attributeWhenReady("service.isUp")
 
     - id: hyperledger-validating-peer
-      description: "A Hyperledger Fabric validating peer"
+      description: |
+        Hyperledger Fabric validating peer
       itemType: entity
       item:
         type: org.apache.brooklyn.entity.stock.BasicStartable
@@ -145,37 +219,41 @@ brooklyn.catalog:
               - $brooklyn:config("cluster.member.id")
 
         brooklyn.children:
-          - type: hyperledger-validating-peer-node
-          - type: hyperledger-validating-peer-service
+          - type: hyperledger-validating-peer-pod
+            id: hyperledger-validating-peer-pod
 
-    - id: hyperledger-validating-peer-node
+          - type: hyperledger-validating-peer-service
+            id: hyperledger-validating-peer-service
+
+    - id: hyperledger-validating-peer-pod
       itemType: entity
       item:
         type: io.cloudsoft.amp.containerservice.kubernetes.entity.KubernetesResource
-        name: "Validating Peer Pod"
+        name: "hyperledger-validating-peer-pod"
 
         brooklyn.config:
           resource: "https://raw.githubusercontent.com/cloudsoft/kubernetes-hyperledger/master/hyperledger-validating-peer-pod.yaml"
 
           hyperledger.rootnode: vp0
           hyperledger.membersrvc: membersrvc
-          hyperledger.secrets: $brooklyn:component("hyperledger-membersrvc-node").attributeWhenReady("secret.keys")
+          hyperledger.secrets: $brooklyn:component("hyperledger-membersrvc").attributeWhenReady("secret.keys")
 
     - id: hyperledger-validating-peer-service
       itemType: entity
       item:
         type: io.cloudsoft.amp.containerservice.kubernetes.entity.KubernetesResource
-        name: "Validating Peer Service"
+        name: "hyperledger-validating-peer-service"
 
         brooklyn.config:
           resource: "https://raw.githubusercontent.com/cloudsoft/kubernetes-hyperledger/master/hyperledger-validating-peer-service.yaml"
 
     - id: hyperledger-namespace
-      description: "Hyperledger namespace for Kubernetes"
+      description: |
+        Hyperledger namespace for Kubernetes
       itemType: entity
       item:
         type: io.cloudsoft.amp.containerservice.kubernetes.entity.KubernetesResource
-        name: "Hyperledger Namespace"
+        name: "hyperledger-namespace"
 
         brooklyn.config:
           resource: "https://raw.githubusercontent.com/cloudsoft/kubernetes-hyperledger/master/hyperledger-namespace.yaml"

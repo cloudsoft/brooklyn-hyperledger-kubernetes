@@ -2,30 +2,10 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: membersrvc
-  namespace: hyperledger-fabric
+  namespace: ${config['hyperledger.namespace']}
   labels:
     app: hyperledger-fabric
     role: membersrvc
-  annotations:
-    scheduler.alpha.kubernetes.io/affinity: >
-        {
-          "podAntiAffinity": {
-            "requiredDuringSchedulingIgnoredDuringExecution": [
-              {
-                "labelSelector": {
-                  "matchExpressions": [
-                    {
-                      "key": "app",
-                      "operator": "In",
-                      "values": [ "hyperledger-fabric" ]
-                    }
-                  ]
-                },
-                "topologyKey": "kubernetes.io/hostname"
-             }
-            ]
-           }
-         }
 spec:
   replicas: 1
   selector:
@@ -39,6 +19,26 @@ spec:
         name: membersrvc
         app: hyperledger-fabric
         role: membersrvc
+      annotations:
+        scheduler.alpha.kubernetes.io/affinity: >
+            {
+              "podAntiAffinity": {
+                "requiredDuringSchedulingIgnoredDuringExecution": [
+                  {
+                    "labelSelector": {
+                      "matchExpressions": [
+                        {
+                          "key": "app",
+                          "operator": "In",
+                          "values": [ "hyperledger-fabric" ]
+                        }
+                      ]
+                    },
+                    "topologyKey": "kubernetes.io/hostname"
+                 }
+                ]
+               }
+             }
     spec:
       restartPolicy: Always
       containers:
