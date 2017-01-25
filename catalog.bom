@@ -1,5 +1,5 @@
 brooklyn.catalog:
-  version: 0.13.0
+  version: 0.14.0-SNAPSHOT
 
   publish:
     description: |
@@ -106,15 +106,17 @@ brooklyn.catalog:
                 - "wu3F1EwJWHvQ"
 
         brooklyn.children:
-          - type: hyperledger-membersrvc-service
-            id: hyperledger-membersrvc-service
+          - type: hyperledger-membersrvc-pod
+            id: hyperledger-membersrvc-pod
+
             brooklyn.config:
               provision.latch: $brooklyn:component("hyperledger-namespace").attributeWhenReady("service.isUp")
 
-          - type: hyperledger-membersrvc-pod
-            id: hyperledger-membersrvc-pod
+          - type: hyperledger-membersrvc-service
+            id: hyperledger-membersrvc-service
+
             brooklyn.config:
-              provision.latch: $brooklyn:component("hyperledger-namespace").attributeWhenReady("service.isUp")
+              provision.latch: $brooklyn:sibling("hyperledger-membersrvc-pod").attributeWhenReady("service.isUp")
 
     - id: hyperledger-membersrvc-pod
       itemType: entity
@@ -143,15 +145,17 @@ brooklyn.catalog:
         name: "hyperledger-cli"
 
         brooklyn.children:
-          - type: hyperledger-cli-service
-            id: hyperledger-cli-service
+          - type: hyperledger-cli-pod
+            id: hyperledger-cli-pod
+
             brooklyn.config:
               provision.latch: $brooklyn:component("hyperledger-namespace").attributeWhenReady("service.isUp")
 
-          - type: hyperledger-cli-pod
-            id: hyperledger-cli-pod
+          - type: hyperledger-cli-service
+            id: hyperledger-cli-service
+
             brooklyn.config:
-              provision.latch: $brooklyn:component("hyperledger-namespace").attributeWhenReady("service.isUp")
+              provision.latch: $brooklyn:sibling("hyperledger-cli-pod").attributeWhenReady("service.isUp")
 
     - id: hyperledger-cli-pod
       itemType: entity
@@ -224,6 +228,9 @@ brooklyn.catalog:
 
           - type: hyperledger-validating-peer-service
             id: hyperledger-validating-peer-service
+
+            brooklyn.config:
+              provision.latch: $brooklyn:sibling("hyperledger-validating-peer-pod").attributeWhenReady("service.isUp")
 
     - id: hyperledger-validating-peer-pod
       itemType: entity
