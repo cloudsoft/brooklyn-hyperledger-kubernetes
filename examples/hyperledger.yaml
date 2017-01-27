@@ -4,7 +4,7 @@ location:
     identity: admin
     credential: admin
 services:
-  - type: hyperledger-fabric-single-cluster:0.14.0-SNAPSHOT
+  - type: hyperledger-fabric-single-cluster
     brooklyn.config:
       hyperledger.app.timeout: 60
       hyperledger.peers: 4
