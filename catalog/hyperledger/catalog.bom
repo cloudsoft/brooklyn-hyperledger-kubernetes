@@ -125,7 +125,7 @@ brooklyn.catalog:
         name: "hyperledger-membersrvc-pod"
 
         brooklyn.config:
-          resource: "classpath://io.brooklyn.hyperledger:hyperledger/hyperledger-membersrvc-pod.yaml"
+          resource: "classpath://io.brooklyn.hyperledger.kubernetes:hyperledger/hyperledger-membersrvc-pod.yaml"
 
     - id: hyperledger-membersrvc-service
       itemType: entity
@@ -134,7 +134,7 @@ brooklyn.catalog:
         name: "hyperledger-membersrvc-service"
 
         brooklyn.config:
-          resource: "classpath://io.brooklyn.hyperledger:hyperledger/hyperledger-membersrvc-service.yaml"
+          resource: "classpath://io.brooklyn.hyperledger.kubernetes:hyperledger/hyperledger-membersrvc-service.yaml"
 
     - id: hyperledger-cli
       description: |
@@ -164,7 +164,7 @@ brooklyn.catalog:
         name: "hyperledger-cli-pod"
 
         brooklyn.config:
-          resource: "classpath://io.brooklyn.hyperledger:hyperledger/hyperledger-cli-pod.yaml"
+          resource: "classpath://io.brooklyn.hyperledger.kubernetes:hyperledger/hyperledger-cli-pod.yaml"
 
           hyperledger.clinode: cli
           hyperledger.rootnode: vp0
@@ -177,7 +177,7 @@ brooklyn.catalog:
         name: "hyperledger-cli-service"
 
         brooklyn.config:
-          resource: "classpath://io.brooklyn.hyperledger:hyperledger/hyperledger-cli-service.yaml"
+          resource: "classpath://io.brooklyn.hyperledger.kubernetes:hyperledger/hyperledger-cli-service.yaml"
 
     - id: hyperledger-vp-cluster
       name: "hyperledger-vp-cluster"
@@ -239,7 +239,7 @@ brooklyn.catalog:
         name: "hyperledger-validating-peer-pod"
 
         brooklyn.config:
-          resource: "classpath://io.brooklyn.hyperledger:hyperledger/hyperledger-validating-peer-pod.yaml"
+          resource: "classpath://io.brooklyn.hyperledger.kubernetes:hyperledger/hyperledger-validating-peer-pod.yaml"
 
           hyperledger.rootnode: vp0
           hyperledger.membersrvc: membersrvc
@@ -252,7 +252,7 @@ brooklyn.catalog:
         name: "hyperledger-validating-peer-service"
 
         brooklyn.config:
-          resource: "classpath://io.brooklyn.hyperledger:hyperledger/hyperledger-validating-peer-service.yaml"
+          resource: "classpath://io.brooklyn.hyperledger.kubernetes:hyperledger/hyperledger-validating-peer-service.yaml"
 
     - id: hyperledger-namespace
       description: |
@@ -263,4 +263,4 @@ brooklyn.catalog:
         name: "hyperledger-namespace"
 
         brooklyn.config:
-          resource: "classpath://io.brooklyn.hyperledger:hyperledger/hyperledger-namespace.yaml"
+          resource: "classpath://io.brooklyn.hyperledger.kubernetes:hyperledger/hyperledger-namespace.yaml"

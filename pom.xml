@@ -3,7 +3,7 @@
    <modelVersion>4.0.0</modelVersion>
 
    <groupId>io.brooklyn.hyperledger</groupId>
-   <artifactId>kubernetes-hyperledger</artifactId>
+   <artifactId>hyperledger-kubernetes</artifactId>
    <packaging>jar</packaging>
    <version>0.0.1-SNAPSHOT</version>
 
