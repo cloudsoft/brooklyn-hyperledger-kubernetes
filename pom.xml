@@ -5,7 +5,7 @@
    <groupId>io.brooklyn.hyperledger</groupId>
    <artifactId>hyperledger-kubernetes</artifactId>
    <packaging>jar</packaging>
-   <version>0.14.0</version><!-- HYPERLEDGER_KUBERNETES_VERSION -->
+   <version>0.14.1</version><!-- HYPERLEDGER_KUBERNETES_VERSION -->
 
    <name>Brooklyn :: Hyperledger :: Kubernetes</name>
    <description>Apache Brooklyn blueprint to deploy and manage Hyperledger Fabric on Kubernetes</description>
