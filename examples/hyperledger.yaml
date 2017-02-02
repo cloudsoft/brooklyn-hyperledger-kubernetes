@@ -1,10 +1,12 @@
+name: "HLF"
 location:
   kubernetes:
-    endpoint: http://ec2-54-93-162-155.eu-central-1.compute.amazonaws.com:8000
+    endpoint: http://example.org:8000/
     identity: admin
     credential: admin
 services:
-  - type: hyperledger-fabric-single-cluster
+  - type: hyperledger-fabric-template
+    name: "hyperledger-fabric"
     brooklyn.config:
       hyperledger.app.timeout: 60
       hyperledger.peers: 4
