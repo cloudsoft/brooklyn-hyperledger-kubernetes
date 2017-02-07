@@ -4,18 +4,16 @@ brooklyn.catalog:
   publish:
     description: |
       Entities for running the Hyperledger Fabric project in Apache Brooklyn.
-    license_code: Apache-2.0
-    icon_url: https://raw.githubusercontent.com/cloudsoft/brooklyn-hyperledger/master/hyperledger-fabric-icon.png
-
-    # NOTE how does hyperledger/fabric-peer:latest get tagged as hyperledger/fabric-baseimage:latest now?
+    license_code: APACHE-2.0
+    icon_url: classpath://io.brooklyn.hyperledger.kubernetes:icon/hyperledger-fabric.png
 
   items:
     - id: hyperledger-fabric-template
+      name: "hyperledger-fabric"
       description: |
         A Hyperledger Fabric of a membership services node, a CLI node, a root
         validating peer node, and cluster of validating peer nodes
-      name: "hyperledger-fabric"
-      iconUrl: https://raw.githubusercontent.com/cloudsoft/brooklyn-hyperledger/master/hyperledger-fabric-icon.png
+      iconUrl: classpath://io.brooklyn.hyperledger.kubernetes:icon/hyperledger-fabric.png
       itemType: template
       item:
         services:
@@ -43,6 +41,11 @@ brooklyn.catalog:
                 default: "hyperledger-fabric"
 
     - id: hyperledger-fabric-single-cluster
+      description: |
+        A Hyperledger Fabric of a membership services node, a CLI node, a root
+        validating peer node, and cluster of validating peer nodes
+      iconUrl: classpath://io.brooklyn.hyperledger.kubernetes:icon/hyperledger-fabric.png
+      itemType: entity
       item:
         type: org.apache.brooklyn.entity.stock.BasicApplication
         name: "hyperledger-fabric-single-cluster"
@@ -83,6 +86,7 @@ brooklyn.catalog:
     - id: hyperledger-membersrvc
       description: |
         Hyperledger Fabric membership services
+      iconUrl: classpath://io.brooklyn.hyperledger.kubernetes:icon/hyperledger-fabric.png
       itemType: entity
       item:
         type: org.apache.brooklyn.entity.stock.BasicStartable
@@ -119,6 +123,7 @@ brooklyn.catalog:
               provision.latch: $brooklyn:sibling("hyperledger-membersrvc-pod").attributeWhenReady("service.isUp")
 
     - id: hyperledger-membersrvc-pod
+      iconUrl: classpath://io.brooklyn.hyperledger.kubernetes:icon/hyperledger-fabric.png
       itemType: entity
       item:
         type: io.cloudsoft.amp.containerservice.kubernetes.entity.KubernetesResource
@@ -139,6 +144,7 @@ brooklyn.catalog:
     - id: hyperledger-cli
       description: |
         Hyperledger Fabric CLI
+      iconUrl: classpath://io.brooklyn.hyperledger.kubernetes:icon/hyperledger-fabric.png
       itemType: entity
       item:
         type: org.apache.brooklyn.entity.stock.BasicStartable
@@ -158,6 +164,7 @@ brooklyn.catalog:
               provision.latch: $brooklyn:sibling("hyperledger-cli-pod").attributeWhenReady("service.isUp")
 
     - id: hyperledger-cli-pod
+      iconUrl: classpath://io.brooklyn.hyperledger.kubernetes:icon/hyperledger-fabric.png
       itemType: entity
       item:
         type: io.cloudsoft.amp.containerservice.kubernetes.entity.KubernetesResource
@@ -171,6 +178,7 @@ brooklyn.catalog:
           hyperledger.membersrvc: membersrvc
 
     - id: hyperledger-cli-service
+      iconUrl: classpath://io.brooklyn.hyperledger.kubernetes:icon/hyperledger-fabric.png
       itemType: entity
       item:
         type: io.cloudsoft.amp.containerservice.kubernetes.entity.KubernetesResource
@@ -180,11 +188,13 @@ brooklyn.catalog:
           resource: "classpath://io.brooklyn.hyperledger.kubernetes:hyperledger/hyperledger-cli-service.yaml"
 
     - id: hyperledger-vp-cluster
-      name: "hyperledger-vp-cluster"
       description: |
         A cluster of Hyperledger Fabric validating peers
+      iconUrl: classpath://io.brooklyn.hyperledger.kubernetes:icon/hyperledger-fabric.png
+      itemType: entity
       item:
         type: org.apache.brooklyn.entity.group.DynamicCluster
+        name: "hyperledger-vp-cluster"
 
         brooklyn.config:
           initialSize: $brooklyn:config("hyperledger.peers")
@@ -212,9 +222,11 @@ brooklyn.catalog:
     - id: hyperledger-validating-peer
       description: |
         Hyperledger Fabric validating peer
+      iconUrl: classpath://io.brooklyn.hyperledger.kubernetes:icon/hyperledger-fabric.png
       itemType: entity
       item:
         type: org.apache.brooklyn.entity.stock.BasicStartable
+        name: "hyperledger-validating-peer"
 
         brooklyn.config:
           hyperledger.peernode:
@@ -233,6 +245,7 @@ brooklyn.catalog:
               provision.latch: $brooklyn:sibling("hyperledger-validating-peer-pod").attributeWhenReady("service.isUp")
 
     - id: hyperledger-validating-peer-pod
+      iconUrl: classpath://io.brooklyn.hyperledger.kubernetes:icon/hyperledger-fabric.png
       itemType: entity
       item:
         type: io.cloudsoft.amp.containerservice.kubernetes.entity.KubernetesResource
@@ -246,6 +259,7 @@ brooklyn.catalog:
           hyperledger.secrets: $brooklyn:component("hyperledger-membersrvc").attributeWhenReady("secret.keys")
 
     - id: hyperledger-validating-peer-service
+      iconUrl: classpath://io.brooklyn.hyperledger.kubernetes:icon/hyperledger-fabric.png
       itemType: entity
       item:
         type: io.cloudsoft.amp.containerservice.kubernetes.entity.KubernetesResource
@@ -257,6 +271,7 @@ brooklyn.catalog:
     - id: hyperledger-namespace
       description: |
         Hyperledger namespace for Kubernetes
+      iconUrl: classpath://io.brooklyn.hyperledger.kubernetes:icon/hyperledger-fabric.png
       itemType: entity
       item:
         type: io.cloudsoft.amp.containerservice.kubernetes.entity.KubernetesResource
