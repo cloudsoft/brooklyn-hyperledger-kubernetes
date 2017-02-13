@@ -74,5 +74,6 @@ spec:
               chmod +x infiniteloop.sh;
               ./infiniteloop.sh
           ports:
+            - containerPort: 22
             - containerPort: 7051
             - containerPort: 7052

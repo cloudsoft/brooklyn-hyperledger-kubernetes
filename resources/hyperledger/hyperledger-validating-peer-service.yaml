@@ -8,6 +8,9 @@ metadata:
     app: hyperledger-fabric
     role: validating-peer
 spec:
+  <#if config['hyperledger.isroot']>
+  type: NodePort
+  </#if>
   ports:
     - name: "rest"
       port: 7050
