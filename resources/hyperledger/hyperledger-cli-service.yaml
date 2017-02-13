@@ -9,6 +9,9 @@ metadata:
 spec:
   type: NodePort
   ports:
+    - name: "ssh"
+      port: 22
+      targetPort: 22
     - name: "peer-grpc"
       port: 7051
       targetPort: 7051
