@@ -69,6 +69,12 @@ brooklyn.catalog:
               The Kubernetes namespace for Hyperledger components
             type: string
             default: "hyperledger-fabric"
+          - name: hyperledger.loglevel
+            label: "Hyperledger Logging Level"
+            description: |
+              The Hyperledger fabric logging level, default is 'info'.
+            type: string
+            default: "info"
 
         brooklyn.children:
           - type: hyperledger-namespace

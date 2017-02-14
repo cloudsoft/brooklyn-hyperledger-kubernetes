@@ -11,3 +11,4 @@ services:
       hyperledger.app.timeout: 60
       hyperledger.peers: 4
       hyperledger.namespace: "hyperledger-demo"
+      hyperledger.loglevel: "DEBUG"
