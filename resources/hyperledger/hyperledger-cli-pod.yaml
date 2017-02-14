@@ -45,8 +45,6 @@ spec:
         - name: hyperledger-cli
           image: hyperledger/fabric-peer:latest
           env:
-            - name: CORE_VM_ENDPOINT
-              value: "http://${config['hyperledger.clinode']}:4243"
             - name: CORE_PEER_ADDRESS
               value: "${config['hyperledger.clinode']}:7051"
             - name: CORE_PEER_ADDRESSAUTODETECT

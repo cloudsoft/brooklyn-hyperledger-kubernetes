@@ -46,7 +46,7 @@ spec:
           image: hyperledger/fabric-membersrvc:latest
           env:
             - name: CORE_LOGGING_LEVEL
-              value: "info"
+              value: "${config['hyperledger.loglevel']}"
           args:
             - membersrvc
           ports:

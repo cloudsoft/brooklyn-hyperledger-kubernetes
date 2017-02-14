@@ -46,18 +46,16 @@ spec:
         - name: hyperledger-validating-peer-node
           image: hyperledger/fabric-peer:latest
           env:
-            - name: CORE_VM_ENDPOINT
-              value: "http://${config['hyperledger.peernode']}:4243"
             - name: CORE_PEER_ID
               value: "${config['hyperledger.peernode']}"
             - name: CORE_PEER_ADDRESS
               value: "${config['hyperledger.peernode']}:7051"
             - name: CORE_PEER_ADDRESSAUTODETECT
-              value: "false"
+              value: "true"
             - name: CORE_PEER_NETWORKID
               value: "dev"
             - name: CORE_LOGGING_LEVEL
-              value: "info"
+              value: "${config['hyperledger.loglevel']}"
             - name: CORE_SECURITY_ENABLED
               value: "true"
             - name: CORE_SECURITY_PRIVACY
