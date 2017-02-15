@@ -128,6 +128,16 @@ brooklyn.catalog:
             brooklyn.config:
               provision.latch: $brooklyn:sibling("hyperledger-membersrvc-pod").attributeWhenReady("service.isUp")
 
+        brooklyn.enrichers:
+          - type: org.apache.brooklyn.core.entity.lifecycle.ServiceStateLogic$ComputeServiceIndicatorsFromChildrenAndMembers
+            brooklyn.config:
+              uniqueTag: membersrvc-service-up-logic
+              enricher.aggregating.fromChildren: true
+              enricher.aggregating.fromMembers: false
+              enricher.suppressDuplicates: true
+              enricher.service_state.children_and_members.quorum.up: all
+              enricher.service_state.children_and_members.ignore_entities.service_state_values: [ "STOPPING", "STOPPED", "DESTROYED" ]
+
     - id: hyperledger-membersrvc-pod
       iconUrl: classpath://io.brooklyn.hyperledger.kubernetes:icon/hyperledger-fabric.png
       itemType: entity
@@ -168,6 +178,16 @@ brooklyn.catalog:
 
             brooklyn.config:
               provision.latch: $brooklyn:sibling("hyperledger-cli-pod").attributeWhenReady("service.isUp")
+
+        brooklyn.enrichers:
+          - type: org.apache.brooklyn.core.entity.lifecycle.ServiceStateLogic$ComputeServiceIndicatorsFromChildrenAndMembers
+            brooklyn.config:
+              uniqueTag: cli-service-up-logic
+              enricher.aggregating.fromChildren: true
+              enricher.aggregating.fromMembers: false
+              enricher.suppressDuplicates: true
+              enricher.service_state.children_and_members.quorum.up: all
+              enricher.service_state.children_and_members.ignore_entities.service_state_values: [ "STOPPING", "STOPPED", "DESTROYED" ]
 
     - id: hyperledger-cli-pod
       iconUrl: classpath://io.brooklyn.hyperledger.kubernetes:icon/hyperledger-fabric.png
@@ -249,6 +269,16 @@ brooklyn.catalog:
 
             brooklyn.config:
               provision.latch: $brooklyn:sibling("hyperledger-validating-peer-pod").attributeWhenReady("service.isUp")
+
+        brooklyn.enrichers:
+          - type: org.apache.brooklyn.core.entity.lifecycle.ServiceStateLogic$ComputeServiceIndicatorsFromChildrenAndMembers
+            brooklyn.config:
+              uniqueTag: validating-peer-service-up-logic
+              enricher.aggregating.fromChildren: true
+              enricher.aggregating.fromMembers: false
+              enricher.suppressDuplicates: true
+              enricher.service_state.children_and_members.quorum.up: all
+              enricher.service_state.children_and_members.ignore_entities.service_state_values: [ "STOPPING", "STOPPED", "DESTROYED" ]
 
     - id: hyperledger-validating-peer-pod
       iconUrl: classpath://io.brooklyn.hyperledger.kubernetes:icon/hyperledger-fabric.png
