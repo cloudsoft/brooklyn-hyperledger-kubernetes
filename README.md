@@ -9,9 +9,10 @@ This repository contains [Cloudsoft AMP](http://cloudsoft.io/getamp/) blueprints
 ### Step 1: Install Cloudsoft AMP
 
 Use [this guide](http://docs.cloudsoft.io/tutorials/tutorial-get-amp-running.html) to install
-AMP on your OS using the deliverable of your choice.
+AMP on your OS using the "DIY" option (downloading a `tar.gz` archive).
 
-TODO: EA-specific link / instructions?
+Before starting AMP, download the latest release JAR from this repository and place it in the
+`deploy` folder inside the expanded AMP directory.
 
 ### Step 2: Deploy a Kubernetes Cluster
 
@@ -35,7 +36,18 @@ of Kubernetes clusters.
 Use [this guide](http://docs.cloudsoft.io/ccs/tutorials/kubernetes-cluster.html) to deploy your own
 Kubernetes Cluster using AMP and CCS.
 
-### Step 3: Deploy Hyperledger Fabric onto Your Kubernetes Cluster
+### Step 3: Deploy Hyperledger Fabric onto Your Kubernetes
+
+#### 3.1 Add Hyperledger Fabric to the AMP Catalog
+
+From the AMP UI home screen, perform the following steps:
+
+* Click "Blueprint composer" (tile in top row, second from the right)
+* Click "YAML Editor" (button in top right corner)
+* Copy and paste the [Hyperledger catalog file](hyperledger.bom) into the editor
+* Click "Add to catalog" (button in bottom right corner)
+
+#### 3.2 Deploy Hyperledger Fabric
 
 From the AMP UI home screen, perform the following steps:
 
@@ -46,12 +58,8 @@ From the AMP UI home screen, perform the following steps:
 * Change the values of `identity` and `credential` if they differ from the example
 * Click "Deploy" (button in bottom right corner)
 
-In just a matter of moments you will have a Hyperledger Fabric cluster deployed onto your Kubernetes
-cluster.
-
 **NOTE**: The example file contains the default `identity` and `credential` values for Kubernetes
 clusters deployed with AMP.
 
-
-
-
+In just a matter of moments you will have a Hyperledger Fabric cluster deployed onto your Kubernetes
+cluster.
