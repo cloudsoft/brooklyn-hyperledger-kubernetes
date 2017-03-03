@@ -5,8 +5,8 @@ location:
     identity: admin
     credential: admin
 services:
-  - type: hyperledger-fabric-template
-    name: "hyperledger-fabric"
+  - type: hyperledger-fabric-kubernetes-template
+    name: "hyperledger-fabric-kubernetes"
     brooklyn.config:
       hyperledger.app.timeout: 60
       hyperledger.peers: 4

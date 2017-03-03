@@ -135,9 +135,9 @@
                   <configuration>
                      <artifacts>
                         <artifact>
-                           <file>${project.basedir}/catalog/hyperledger/catalog.bom</file>
+                           <file>${project.basedir}/catalog/hyperledger/kubernetes.bom</file>
                            <type>bom</type>
-                           <classifier>hyperledger</classifier>
+                           <classifier>hyperledger-kubernetes</classifier>
                         </artifact>
                      </artifacts>
                   </configuration>
