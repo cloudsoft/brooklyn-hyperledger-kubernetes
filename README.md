@@ -11,9 +11,6 @@ This repository contains [Cloudsoft AMP](http://cloudsoft.io/getamp/) blueprints
 Use [this guide](http://docs.cloudsoft.io/tutorials/tutorial-get-amp-running.html) to install
 AMP on your OS using the "DIY" option (downloading a `tar.gz` archive).
 
-Before starting AMP, download the latest release JAR from this repository and place it in the
-`deploy` folder inside the expanded AMP directory.
-
 ### Step 2: Deploy a Kubernetes Cluster
 
 **NOTE**: You can skip this step if you already have a Kubernetes cluster running.
@@ -40,12 +37,15 @@ Kubernetes Cluster using AMP and CCS.
 
 #### 3.1 Add Hyperledger Fabric to the AMP Catalog
 
-From the AMP UI home screen, perform the following steps:
+Download the [latest release JAR](https://github.com/cloudsoft/brooklyn-hyperledger-kubernetes/releases/download/0.16.0/hyperledger-kubernetes-0.16.0.jar)
+from this repository and place it in the `deploy` directory inside the expanded AMP directory.
 
-* Click "Blueprint composer" (tile in top row, second from the right)
-* Click "YAML Editor" (button in top right corner)
+Then from the AMP UI home screen, perform the following steps:
+
+* Click the square button in the top right corner
+* Click "Blueprint importer"
 * Copy and paste the [Hyperledger catalog file](hyperledger.bom) into the editor
-* Click "Add to catalog" (button in bottom right corner)
+* Click "Import" (button in bottom right corner)
 
 #### 3.2 Deploy Hyperledger Fabric
 
