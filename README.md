@@ -33,6 +33,8 @@ of Kubernetes clusters.
 Use [this guide](http://docs.cloudsoft.io/ccs/tutorials/kubernetes-cluster.html) to deploy your own
 Kubernetes Cluster using AMP and CCS.
 
+**NOTE**: `kubernetes.initial.size` must be set to 6 or larger.
+
 ### Step 3: Deploy Hyperledger Fabric onto Your Kubernetes
 
 #### 3.1 Add Hyperledger Fabric to the AMP Catalog
